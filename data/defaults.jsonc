@@ -1,0 +1,36 @@
+{
+  // Output formats to generate after each scan.
+  // Available: "md", "json"
+  "output": {
+    "formats": ["md", "json"]
+  },
+
+  // File scanning behavior
+  "scanning": {
+    // Files larger than this threshold (in MB) are reported as large files
+    "largeFileSizeMb": 1,
+
+    // Maximum number of large files to include in the report
+    "largeFileMaxResults": 20,
+
+    // Glob patterns to exclude from scanning
+    "ignorePatterns": [
+      "node_modules/**",
+      ".git/**",
+      "dist/**",
+      "build/**",
+      ".sourcedash/**"
+    ]
+  },
+
+  // Scoring deductions — adjust to change how the readiness score is calculated
+  "scoring": {
+    "missingReadme": 20,
+    "missingReadmeInstallSection": 8,
+    "missingTestScript": 8,
+    "missingBuildScript": 8,
+    "missingEnvExample": 10,
+    "largeFileDeductionEach": 3,
+    "largeFileDeductionMax": 15
+  }
+}

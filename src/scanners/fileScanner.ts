@@ -2,9 +2,7 @@ import { stat } from 'fs/promises';
 import { join } from 'path';
 import fg from 'fast-glob';
 import type { FileInfo } from '../core/types.js';
-
-const LARGE_FILE_THRESHOLD_MB = 1;
-const LARGE_FILE_MAX_RESULTS = 20;
+import type { Config } from '../core/config.js';
 
 async function exists(filePath: string): Promise<boolean> {
   try {
@@ -15,10 +13,13 @@ async function exists(filePath: string): Promise<boolean> {
   }
 }
 
-async function findLargeFiles(projectPath: string): Promise<Array<{ path: string; sizeMb: number }>> {
+async function findLargeFiles(
+  projectPath: string,
+  config: Config['scanning']
+): Promise<Array<{ path: string; sizeMb: number }>> {
   const files = await fg('**/*', {
     cwd: projectPath,
-    ignore: ['node_modules/**', '.git/**', 'dist/**', 'build/**', '.sourcedash/**'],
+    ignore: config.ignorePatterns,
     onlyFiles: true,
     absolute: false,
   });
@@ -28,16 +29,16 @@ async function findLargeFiles(projectPath: string): Promise<Array<{ path: string
   for (const file of files) {
     const s = await stat(join(projectPath, file));
     const sizeMb = s.size / (1024 * 1024);
-    if (sizeMb >= LARGE_FILE_THRESHOLD_MB) {
+    if (sizeMb >= config.largeFileSizeMb) {
       results.push({ path: file, sizeMb: Math.round(sizeMb * 10) / 10 });
     }
-    if (results.length >= LARGE_FILE_MAX_RESULTS) break;
+    if (results.length >= config.largeFileMaxResults) break;
   }
 
   return results.sort((a, b) => b.sizeMb - a.sizeMb);
 }
 
-export async function scanFiles(projectPath: string): Promise<FileInfo> {
+export async function scanFiles(projectPath: string, config: Config['scanning']): Promise<FileInfo> {
   const [hasEnvExample, hasDockerfile, hasDockerCompose, hasGitHubActions, largeFiles] =
     await Promise.all([
       exists(join(projectPath, '.env.example')),
@@ -46,7 +47,7 @@ export async function scanFiles(projectPath: string): Promise<FileInfo> {
         (v) => v || exists(join(projectPath, 'docker-compose.yaml'))
       ),
       exists(join(projectPath, '.github', 'workflows')),
-      findLargeFiles(projectPath),
+      findLargeFiles(projectPath, config),
     ]);
 
   return {
