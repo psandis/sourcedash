@@ -1,5 +1,7 @@
 # SourceDash
 
+[![npm](https://img.shields.io/npm/v/sourcedash?style=flat-square)](https://www.npmjs.com/package/sourcedash)
+
 Project handover scanner. Generate a practical report on what is present, what is missing, and what should be fixed first before a repo is easy to maintain.
 
 `sourcedash` scans a local project path or a GitHub repository URL and writes timestamped Markdown and JSON reports to a local history store. It is built for the first maintenance question on an unfamiliar repo: what shape is this project actually in?

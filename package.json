@@ -1,16 +1,26 @@
 {
   "name": "sourcedash",
   "version": "1.1.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Project handover scanner. Generate practical reports on what is present, what is missing, and what should be fixed first before a repo is easy to maintain.",
+  "main": "dist/cli.js",
+  "bin": {
+    "sourcedash": "dist/cli.js"
+  },
   "scripts": {
     "dev": "tsx src/cli.ts",
     "build": "tsc",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "npm run build && npm test"
   },
+  "files": [
+    "dist",
+    "data/defaults.jsonc",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module",
   "dependencies": {
     "chalk": "^5.6.2",
